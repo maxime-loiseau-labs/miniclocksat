@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mini Sat</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@300;400;500&display=swap');
+
+  :root {
+    --bg:      #0a0c10;
+    --surface: #111318;
+    --border:  #1e2128;
+    --text:    #e8eaf0;
+    --muted:   #4a5060;
+    --accent:  #4fc3f7;
+    --accent2: #81d4a0;
+    --warn:    #ffb74d;
+    --danger:  #ef5350;
+    --mono:    'Space Mono', monospace;
+    --sans:    'Inter', sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 380px;
+  }
+
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+  }
+
+  .logo {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--accent);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .status-dot {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+  }
+
+  .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--muted);
+  }
+  .dot.ok    { background: var(--accent2); box-shadow: 0 0 6px var(--accent2); animation: pulse 2.5s ease-in-out infinite; }
+  .dot.warn  { background: var(--warn);   box-shadow: 0 0 6px var(--warn); }
+  .dot.error { background: var(--danger); box-shadow: 0 0 6px var(--danger); }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.4; }
+  }
+
+  .cards {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 22px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(12px);
+    animation: fadeUp 0.4s ease forwards;
+  }
+  .card:nth-child(1) { animation-delay: 0.05s; }
+  .card:nth-child(2) { animation-delay: 0.12s; }
+  .card:nth-child(3) { animation-delay: 0.19s; }
+
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 20%; bottom: 20%;
+    width: 2px;
+    border-radius: 0 2px 2px 0;
+    background: var(--card-color, var(--accent));
+  }
+
+  .card-left { display: flex; flex-direction: column; gap: 4px; }
+
+  .card-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .card-value {
+    font-family: var(--mono);
+    font-size: 36px;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--text);
+  }
+  .card-value.volt-ok   { color: var(--accent2); }
+  .card-value.volt-warn { color: var(--warn); }
+  .card-value.volt-low  { color: var(--danger); }
+
+  .card-unit {
+    font-family: var(--sans);
+    font-size: 16px;
+    font-weight: 300;
+    color: var(--muted);
+    margin-left: 3px;
+  }
+
+  .card-icon {
+    font-size: 32px;
+    opacity: 0.18;
+    user-select: none;
+  }
+
+  .no-data {
+    background: var(--surface);
+    border: 1px dashed var(--border);
+    border-radius: 12px;
+    padding: 32px 22px;
+    text-align: center;
+    margin-bottom: 12px;
+  }
+  .no-data-icon { font-size: 28px; margin-bottom: 12px; opacity: 0.4; }
+  .no-data h2 {
+    font-family: var(--mono);
+    font-size: 13px;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+  .no-data p { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+  footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 4px;
+    gap: 8px;
+  }
+  .footer-url {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--border);
+    letter-spacing: 0.06em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .footer-ts {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="logo">◈ Mini Sat</div>
+    <div class="status-dot">
+      <div class="dot" id="dot"></div>
+      <span id="status-text">—</span>
+    </div>
+  </header>
+
+  <div id="app"></div>
+
+  <footer>
+    <div class="footer-url" id="footer-url"></div>
+    <div class="footer-ts" id="footer-ts"></div>
+  </footer>
+
+</div>
+<script>
+(function() {
+
+  // ── Lecture des paramètres URL ──────────────────────────────────
+  // URL attendue : ...index.html?T=23&H=61&V=3.82
+  // Fournie par l'ATtiny via le ST25DV à chaque cycle RTC (1/min)
+  var params = new URLSearchParams(window.location.search);
+  var T = params.get('T');
+  var H = params.get('H');
+  var V = params.get('V');
+
+  var app     = document.getElementById('app');
+  var dot     = document.getElementById('dot');
+  var statusT = document.getElementById('status-text');
+
+  // Footer
+  document.getElementById('footer-url').textContent = window.location.href;
+  document.getElementById('footer-ts').textContent  =
+    new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+
+  // ── Aucune donnée ───────────────────────────────────────────────
+  if (T === null && H === null && V === null) {
+    dot.classList.add('error');
+    statusT.textContent = 'NO DATA';
+    app.innerHTML =
+      '<div class="no-data">' +
+        '<div class="no-data-icon">◌</div>' +
+        '<h2>Aucune donnée</h2>' +
+        '<p>Approchez le téléphone du mini sat<br>pour recevoir les mesures.</p>' +
+      '</div>';
+    return;
+  }
+
+  // ── Statut tension ──────────────────────────────────────────────
+  var vNum      = parseFloat(V);
+  var voltClass = 'volt-ok';
+  var sysStatus = 'OK';
+  var dotClass  = 'ok';
+
+  if (!isNaN(vNum)) {
+    if      (vNum < 3.0) { voltClass = 'volt-low';  sysStatus = 'LOW';  dotClass = 'error'; }
+    else if (vNum < 3.4) { voltClass = 'volt-warn'; sysStatus = 'WARN'; dotClass = 'warn';  }
+  }
+
+  dot.classList.add(dotClass);
+  statusT.textContent = sysStatus;
+
+  // ── Construction des cartes ─────────────────────────────────────
+  var colorMap = {
+    'volt-ok':   'var(--accent2)',
+    'volt-warn': 'var(--warn)',
+    'volt-low':  'var(--danger)'
+  };
+
+  var cards = [];
+
+  if (T !== null) cards.push({
+    label: 'Température', value: T, unit: '°C',
+    icon: '☀', color: 'var(--accent)', cls: ''
+  });
+
+  if (H !== null) cards.push({
+    label: 'Humidité', value: H, unit: '%',
+    icon: '◎', color: 'var(--accent2)', cls: ''
+  });
+
+  if (V !== null) cards.push({
+    label: 'Supercap', value: V, unit: 'V',
+    icon: '⬡', color: colorMap[voltClass], cls: voltClass
+  });
+
+  // ── Rendu ───────────────────────────────────────────────────────
+  var html = '<div class="cards">';
+  for (var i = 0; i < cards.length; i++) {
+    var c = cards[i];
+    html +=
+      '<div class="card" style="--card-color:' + c.color + '">' +
+        '<div class="card-left">' +
+          '<div class="card-label">' + c.label + '</div>' +
+          '<div>' +
+            '<span class="card-value ' + c.cls + '">' + c.value + '</span>' +
+            '<span class="card-unit">' + c.unit + '</span>' +
+          '</div>' +
+        '</div>' +
+        '<div class="card-icon">' + c.icon + '</div>' +
+      '</div>';
+  }
+  html += '</div>';
+  app.innerHTML = html;
+
+})();
+</script>
+</body>
+</html>
