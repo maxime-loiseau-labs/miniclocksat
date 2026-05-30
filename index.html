@@ -7,124 +7,122 @@
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@300;400;500&display=swap');
   :root {
-    --bg:      #0a0c10;
-    --surface: #111318;
-    --border:  #1e2128;
-    --text:    #e8eaf0;
-    --muted:   #4a5060;
-    --accent:  #4fc3f7;
-    --accent2: #81d4a0;
-    --warn:    #ffb74d;
-    --danger:  #ef5350;
-    --mono:    'Space Mono', monospace;
-    --sans:    'Inter', sans-serif;
+    --bg:#0a0c10;--surface:#111318;--border:#1e2128;
+    --text:#e8eaf0;--muted:#4a5060;--accent:#4fc3f7;
+    --accent2:#81d4a0;--warn:#ffb74d;--danger:#ef5350;
+    --mono:'Space Mono',monospace;--sans:'Inter',sans-serif;
   }
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--sans);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 24px 16px 40px;
-    background-image:
-      linear-gradient(var(--border) 1px, transparent 1px),
-      linear-gradient(90deg, var(--border) 1px, transparent 1px);
-    background-size: 40px 40px;
-  }
-  .container { width: 100%; max-width: 380px; }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:var(--sans);
+    min-height:100vh;display:flex;flex-direction:column;align-items:center;
+    padding:24px 16px 48px;
+    background-image:linear-gradient(var(--border) 1px,transparent 1px),
+      linear-gradient(90deg,var(--border) 1px,transparent 1px);
+    background-size:40px 40px;}
+  .container{width:100%;max-width:390px;}
 
   /* Header */
-  header {
-    display: flex; align-items: center;
-    justify-content: space-between; margin-bottom: 28px;
-  }
-  .logo { font-family: var(--mono); font-size: 13px; color: var(--accent); letter-spacing: .12em; text-transform: uppercase; }
-  .status-dot { display: flex; align-items: center; gap: 7px; font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: .08em; }
-  .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); }
-  .dot.ok    { background: var(--accent2); box-shadow: 0 0 6px var(--accent2); animation: pulse 2.5s ease-in-out infinite; }
-  .dot.warn  { background: var(--warn);    box-shadow: 0 0 6px var(--warn); }
-  .dot.error { background: var(--danger);  box-shadow: 0 0 6px var(--danger); }
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+  header{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;}
+  .logo{font-family:var(--mono);font-size:13px;color:var(--accent);letter-spacing:.12em;text-transform:uppercase;}
+  .status-dot{display:flex;align-items:center;gap:7px;font-family:var(--mono);font-size:10px;color:var(--muted);}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--muted);}
+  .dot.ok{background:var(--accent2);box-shadow:0 0 6px var(--accent2);animation:pulse 2.5s ease-in-out infinite;}
+  .dot.warn{background:var(--warn);box-shadow:0 0 6px var(--warn);}
+  .dot.error{background:var(--danger);box-shadow:0 0 6px var(--danger);}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 
   /* Sensor cards */
-  .cards { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
-  .card {
-    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
-    padding: 20px 22px; display: flex; align-items: center;
-    justify-content: space-between; position: relative; overflow: hidden;
-    opacity: 0; transform: translateY(12px);
-    animation: fadeUp .4s ease forwards;
-  }
-  .card:nth-child(1){animation-delay:.05s} .card:nth-child(2){animation-delay:.12s} .card:nth-child(3){animation-delay:.19s}
-  @keyframes fadeUp { to { opacity:1; transform:translateY(0) } }
-  .card::before {
-    content:''; position:absolute; left:0; top:20%; bottom:20%;
-    width:2px; border-radius:0 2px 2px 0; background:var(--card-color,var(--accent));
-  }
-  .card-label { font-family:var(--mono); font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); margin-bottom:4px; }
-  .card-value { font-family:var(--mono); font-size:36px; font-weight:700; line-height:1; }
-  .card-value.volt-ok   { color: var(--accent2); }
-  .card-value.volt-warn { color: var(--warn); }
-  .card-value.volt-low  { color: var(--danger); }
-  .card-unit  { font-family:var(--sans); font-size:16px; font-weight:300; color:var(--muted); margin-left:3px; }
-  .card-icon  { font-size:32px; opacity:.18; user-select:none; }
+  .cards{display:flex;flex-direction:column;gap:10px;margin-bottom:16px;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;
+    padding:18px 20px;display:flex;align-items:center;justify-content:space-between;
+    position:relative;overflow:hidden;opacity:0;transform:translateY(10px);
+    animation:fadeUp .4s ease forwards;}
+  .card:nth-child(1){animation-delay:.05s}.card:nth-child(2){animation-delay:.1s}.card:nth-child(3){animation-delay:.15s}
+  @keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
+  .card::before{content:'';position:absolute;left:0;top:20%;bottom:20%;width:2px;
+    border-radius:0 2px 2px 0;background:var(--card-color,var(--accent));}
+  .card-label{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:3px;}
+  .card-value{font-family:var(--mono);font-size:34px;font-weight:700;line-height:1;}
+  .card-value.volt-ok{color:var(--accent2)}.card-value.volt-warn{color:var(--warn)}.card-value.volt-low{color:var(--danger)}
+  .card-unit{font-size:15px;font-weight:300;color:var(--muted);margin-left:2px;}
+  .card-icon{font-size:28px;opacity:.15;user-select:none;}
 
   /* No data */
-  .no-data { background:var(--surface); border:1px dashed var(--border); border-radius:12px; padding:32px 22px; text-align:center; margin-bottom:20px; }
-  .no-data-icon { font-size:28px; margin-bottom:12px; opacity:.4; }
-  .no-data h2 { font-family:var(--mono); font-size:13px; letter-spacing:.1em; color:var(--muted); margin-bottom:8px; text-transform:uppercase; }
-  .no-data p  { font-size:12px; color:var(--muted); line-height:1.6; }
+  .no-data{background:var(--surface);border:1px dashed var(--border);border-radius:12px;
+    padding:28px 20px;text-align:center;margin-bottom:16px;}
+  .no-data-icon{font-size:26px;margin-bottom:10px;opacity:.4;}
+  .no-data h2{font-family:var(--mono);font-size:12px;letter-spacing:.1em;color:var(--muted);margin-bottom:6px;text-transform:uppercase;}
+  .no-data p{font-size:12px;color:var(--muted);line-height:1.6;}
 
-  /* Separator */
-  .sep { border:none; border-top:1px solid var(--border); margin:4px 0 20px; }
+  .sep{border:none;border-top:1px solid var(--border);margin:4px 0 16px;}
+
+  /* ── Toggle historique ─────────────────────────────────────────── */
+  /* Visuellement un bouton card cliquable */
+  .hist-toggle-row{
+    display:flex;align-items:center;justify-content:space-between;
+    cursor:pointer;user-select:none;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:12px 16px;
+    margin-bottom:4px;
+    transition:border-color .15s, background .15s;
+  }
+  .hist-toggle-row:hover{border-color:var(--accent);background:#131620;}
+  .hist-toggle-row:active{background:#0f1219;}
+  .hist-left{display:flex;align-items:center;gap:10px;}
+  .hist-icon{font-size:14px;opacity:.5;}
+  .hist-label{font-family:var(--mono);font-size:10px;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--text);}
+  .hist-meta{font-family:var(--mono);font-size:9px;color:var(--muted);}
+  .hist-chevron{font-size:12px;color:var(--muted);transition:transform .22s;}
+  .hist-chevron.open{transform:rotate(180deg);}
+
+  /* Corps graphes (animation max-height) */
+  .hist-body{overflow:hidden;max-height:0;transition:max-height .3s ease;}
+  .hist-body.open{max-height:900px;}
+
+  /* Charts */
+  .chart-wrap{background:var(--surface);border:1px solid var(--border);
+    border-radius:10px;padding:10px 12px;margin-top:8px;}
+  .chart-meta{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:6px;}
+  .chart-name{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);}
+  .chart-range{font-family:var(--mono);font-size:9px;color:var(--muted);}
+  .chart-svg{width:100%;display:block;}
+  .sleep-legend{display:flex;align-items:center;gap:6px;font-size:10px;
+    color:var(--muted);padding:8px 2px 2px;}
+  .sleep-swatch{width:12px;height:8px;background:rgba(255,255,255,0.04);
+    border:1px solid #1a1c2a;border-radius:1px;flex-shrink:0;}
 
   /* Config panel */
-  .config-panel { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:20px 22px; }
-  .config-title { font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); margin-bottom:16px; }
+  .config-panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;}
+  .config-title{font-family:var(--mono);font-size:10px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--muted);margin-bottom:14px;}
+  .utc-clock{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--accent);margin-bottom:2px;}
+  .utc-label{font-family:var(--mono);font-size:9px;letter-spacing:.08em;color:var(--muted);margin-bottom:16px;}
+  .field-row{margin-bottom:12px;}
+  .field-label{font-size:11px;color:var(--muted);margin-bottom:4px;}
+  select{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;
+    padding:8px 30px 8px 10px;color:var(--text);font-family:var(--sans);font-size:13px;
+    appearance:none;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%234a5060' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;background-position:right 10px center;cursor:pointer;}
+  select:focus{outline:none;border-color:var(--accent);}
+  .sync-btn{width:100%;margin-top:16px;padding:12px;background:transparent;
+    border:1px solid var(--accent);border-radius:10px;color:var(--accent);
+    font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+    cursor:pointer;transition:background .15s;}
+  .sync-btn:hover{background:rgba(79,195,247,.08);}
+  .sync-btn:disabled{opacity:.35;cursor:not-allowed;}
+  .sync-status{margin-top:8px;font-family:var(--mono);font-size:10px;
+    text-align:center;min-height:16px;letter-spacing:.05em;}
+  .sync-status.ok{color:var(--accent2)}.sync-status.error{color:var(--danger)}.sync-status.info{color:var(--muted)}
+  .no-nfc{font-size:11px;color:var(--warn);text-align:center;margin-top:10px;line-height:1.6;}
 
-  .utc-clock { font-family:var(--mono); font-size:22px; font-weight:700; color:var(--accent); margin-bottom:4px; }
-  .utc-label { font-family:var(--mono); font-size:9px; letter-spacing:.1em; color:var(--muted); margin-bottom:18px; }
-
-  .field-row { margin-bottom:14px; }
-  .field-label { font-size:11px; color:var(--muted); margin-bottom:5px; letter-spacing:.05em; }
-  select {
-    width:100%; background:var(--bg); border:1px solid var(--border);
-    border-radius:8px; padding:9px 12px; color:var(--text);
-    font-family:var(--sans); font-size:13px; appearance:none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%234a5060' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
-    background-repeat:no-repeat; background-position:right 12px center; cursor:pointer;
-  }
-  select:focus { outline:none; border-color:var(--accent); }
-
-  /* Sync button */
-  .sync-btn {
-    width:100%; margin-top:18px; padding:13px;
-    background:transparent; border:1px solid var(--accent);
-    border-radius:10px; color:var(--accent);
-    font-family:var(--mono); font-size:12px; letter-spacing:.1em;
-    text-transform:uppercase; cursor:pointer;
-    transition:background .15s, color .15s;
-  }
-  .sync-btn:hover  { background:rgba(79,195,247,.1); }
-  .sync-btn:active { background:rgba(79,195,247,.2); transform:scale(.98); }
-  .sync-btn:disabled { opacity:.4; cursor:not-allowed; }
-
-  /* Status message */
-  .sync-status { margin-top:10px; font-family:var(--mono); font-size:11px; text-align:center; min-height:18px; letter-spacing:.05em; }
-  .sync-status.ok    { color:var(--accent2); }
-  .sync-status.error { color:var(--danger); }
-  .sync-status.info  { color:var(--muted); }
-
-  /* No NFC warning */
-  .no-nfc { font-size:12px; color:var(--warn); text-align:center; margin-top:12px; line-height:1.6; }
-
-  /* Footer */
-  footer { display:flex; align-items:center; justify-content:space-between; padding-top:16px; gap:8px; }
-  .footer-url { font-family:var(--mono); font-size:9px; color:var(--border); letter-spacing:.06em; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-  .footer-ts  { font-family:var(--mono); font-size:9px; color:var(--muted); letter-spacing:.06em; white-space:nowrap; }
+  footer{display:flex;justify-content:space-between;padding-top:16px;gap:8px;}
+  .footer-url{font-family:var(--mono);font-size:9px;color:var(--border);
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .footer-ts{font-family:var(--mono);font-size:9px;color:var(--muted);white-space:nowrap;}
 </style>
 </head>
 <body>
@@ -138,32 +136,29 @@
     </div>
   </header>
 
-  <!-- Zone données capteurs -->
   <div id="app"></div>
+
+  <!-- Section historique (toggle) -->
+  <div id="hist-section"></div>
 
   <hr class="sep">
 
-  <!-- Zone config NFC -->
+  <!-- Config NFC — toujours visible, même sans données URL -->
   <div class="config-panel">
     <div class="config-title">Sync Mini Sat</div>
-
     <div class="utc-clock" id="utc-clock">--:--:--</div>
     <div class="utc-label">UTC — heure envoyée au sat</div>
-
     <div class="field-row">
-      <div class="field-label">Fuseau principal (Z1 — auto détecté)</div>
+      <div class="field-label">Fuseau principal Z1 (auto-détecté)</div>
       <select id="sel-z1"></select>
     </div>
-
     <div class="field-row">
-      <div class="field-label">Fuseau secondaire (Z2)</div>
+      <div class="field-label">Fuseau secondaire Z2</div>
       <select id="sel-z2"></select>
     </div>
-
     <button class="sync-btn" id="sync-btn" onclick="syncNFC()">
       ▶ Approcher et synchroniser
     </button>
-
     <div class="sync-status info" id="sync-status"></div>
     <div id="no-nfc-msg"></div>
   </div>
@@ -177,224 +172,360 @@
 <script>
 (function() {
 
-  // ══════════════════════════════════════════════════════════════════
-  // LISTE DES FUSEAUX HORAIRES
-  // offset = décalage UTC standard (hiver) en minutes
-  // dst    = 1 si le fuseau observe l'heure d'été, 0 sinon
-  // Le MCU applique la règle DST lui-même à l'affichage (comme avant).
-  // ══════════════════════════════════════════════════════════════════
-  var TZ = [
-    { name:"Honolulu (UTC-10)",          offset:-600, dst:0 },
-    { name:"Anchorage (UTC-9)",          offset:-540, dst:1 },
-    { name:"Los Angeles (UTC-8)",        offset:-480, dst:1 },
-    { name:"Denver (UTC-7)",             offset:-420, dst:1 },
-    { name:"Chicago (UTC-6)",            offset:-360, dst:1 },
-    { name:"New York (UTC-5)",           offset:-300, dst:1 },
-    { name:"Caracas (UTC-4)",            offset:-240, dst:0 },
-    { name:"Buenos Aires (UTC-3)",       offset:-180, dst:0 },
-    { name:"Açores (UTC-1)",             offset: -60, dst:1 },
-    { name:"Londres / Lisbonne (UTC+0)", offset:   0, dst:1 },
-    { name:"Paris / Berlin (UTC+1)",     offset:  60, dst:1 },
-    { name:"Helsinki / Athènes (UTC+2)", offset: 120, dst:1 },
-    { name:"Moscou (UTC+3)",             offset: 180, dst:0 },
-    { name:"Dubaï / Abu Dhabi (UTC+4)",  offset: 240, dst:0 },
-    { name:"Karachi (UTC+5)",            offset: 300, dst:0 },
-    { name:"Mumbai / Delhi (UTC+5:30)",  offset: 330, dst:0 },
-    { name:"Dhaka (UTC+6)",              offset: 360, dst:0 },
-    { name:"Bangkok / Jakarta (UTC+7)",  offset: 420, dst:0 },
-    { name:"Pékin / Singapour (UTC+8)",  offset: 480, dst:0 },
-    { name:"Tokyo / Séoul (UTC+9)",      offset: 540, dst:0 },
-    { name:"Sydney (UTC+10)",            offset: 600, dst:1 },
-    { name:"Nouméa (UTC+11)",            offset: 660, dst:0 },
-    { name:"Auckland (UTC+12)",          offset: 720, dst:1 }
-  ];
-
-  // ── Auto-détection fuseau standard du téléphone ──────────────────
-  // JS donne l'offset courant (DST inclus). On prend le min/max
-  // entre janvier et juillet pour trouver l'offset standard (hiver).
-  function detectStandardOffset() {
-    var jan = new Date(Date.UTC(2024,0,15));
-    var jul = new Date(Date.UTC(2024,6,15));
-    // getTimezoneOffset() retourne UTC-local en minutes (inversé)
-    var janOff = -jan.getTimezoneOffset();
-    var julOff = -jul.getTimezoneOffset();
-    // Hémisphère nord : jan = hiver = standard
-    // Hémisphère sud  : jul = hiver = standard
-    // On prend le plus petit des deux valeurs absolues → offset hiver
-    return (Math.abs(janOff) <= Math.abs(julOff)) ? janOff : julOff;
-  }
-
-  function findClosestTZ(offsetMinutes) {
-    var best = 0, bestDiff = Infinity;
-    for (var i = 0; i < TZ.length; i++) {
-      var d = Math.abs(TZ[i].offset - offsetMinutes);
-      if (d < bestDiff) { bestDiff = d; best = i; }
-    }
-    return best;
-  }
-
-  // ── Remplissage des selects ──────────────────────────────────────
-  var selZ1 = document.getElementById('sel-z1');
-  var selZ2 = document.getElementById('sel-z2');
-  var detectedIdx = findClosestTZ(detectStandardOffset());
-
-  for (var i = 0; i < TZ.length; i++) {
-    var o1 = document.createElement('option');
-    var o2 = document.createElement('option');
-    o1.value = o2.value = i;
-    o1.textContent = o2.textContent = TZ[i].name;
-    selZ1.appendChild(o1);
-    selZ2.appendChild(o2);
-  }
-  selZ1.value = detectedIdx;
-  // Z2 par défaut : Tokyo si détecté Paris, sinon Paris
-  selZ2.value = (detectedIdx === 10) ? 19 : 10;
-
-  // ── Horloge UTC live ─────────────────────────────────────────────
-  function pad(n) { return n < 10 ? '0'+n : ''+n; }
-
-  function updateClock() {
-    var now = new Date();
-    document.getElementById('utc-clock').textContent =
-      pad(now.getUTCHours()) + ':' +
-      pad(now.getUTCMinutes()) + ':' +
-      pad(now.getUTCSeconds());
-  }
-  updateClock();
-  setInterval(updateClock, 1000);
-
-  // ── Affichage capteurs ───────────────────────────────────────────
-  var params = new URLSearchParams(window.location.search);
-  var T = params.get('T');
-  var H = params.get('H');
-  var V = params.get('V');
-
-  var app     = document.getElementById('app');
-  var dot     = document.getElementById('dot');
-  var statusT = document.getElementById('status-text');
+  var p   = new URLSearchParams(window.location.search);
+  var T   = p.get('T');
+  var H   = p.get('H');
+  var V   = p.get('V');
+  var NOW = p.get('NOW');
+  var H24 = p.get('H24');
 
   document.getElementById('footer-url').textContent = window.location.href;
   document.getElementById('footer-ts').textContent  =
     new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
 
-  if (T === null && H === null && V === null) {
-    dot.classList.add('error');
-    statusT.textContent = 'NO DATA';
-    app.innerHTML =
-      '<div class="no-data">' +
-        '<div class="no-data-icon">◌</div>' +
-        '<h2>Aucune donnée</h2>' +
-        '<p>Approchez le téléphone du mini sat<br>pour recevoir les mesures.</p>' +
-      '</div>';
+  // ══════════════════════════════════════════════════════════════════
+  // 1. CARTES CAPTEURS ACTUELS
+  // ══════════════════════════════════════════════════════════════════
+  var app = document.getElementById('app');
+  var dot = document.getElementById('dot');
+  var statusEl = document.getElementById('status-text');
+
+  if (!T && !H && !V) {
+    dot.classList.add('error'); statusEl.textContent='NO DATA';
+    app.innerHTML=
+      '<div class="no-data"><div class="no-data-icon">◌</div>'+
+      '<h2>Aucune donnée</h2>'+
+      '<p>Approchez le téléphone du mini sat<br>pour recevoir les mesures.<br><br>'+
+      'Ou utilisez la zone ci-dessous pour synchroniser l\'heure.</p></div>';
   } else {
-    var vNum = parseFloat(V);
-    var voltClass = 'volt-ok', sysStatus = 'OK', dotClass = 'ok';
-    if (!isNaN(vNum)) {
-      if      (vNum < 3.0) { voltClass='volt-low';  sysStatus='LOW';  dotClass='error'; }
-      else if (vNum < 3.4) { voltClass='volt-warn'; sysStatus='WARN'; dotClass='warn';  }
+    var vNum=parseFloat(V);
+    var vCls='volt-ok',sys='OK',dotCls='ok';
+    if(!isNaN(vNum)){
+      if(vNum<3.0){vCls='volt-low';sys='LOW';dotCls='error';}
+      else if(vNum<3.4){vCls='volt-warn';sys='WARN';dotCls='warn';}
     }
-    dot.classList.add(dotClass);
-    statusT.textContent = sysStatus;
-
-    var colorMap = { 'volt-ok':'var(--accent2)', 'volt-warn':'var(--warn)', 'volt-low':'var(--danger)' };
-    var cards = [];
-    if (T !== null) cards.push({ label:'Température', value:T, unit:'°C',  icon:'☀', color:'var(--accent)',  cls:'' });
-    if (H !== null) cards.push({ label:'Humidité',    value:H, unit:'%',   icon:'◎', color:'var(--accent2)', cls:'' });
-    if (V !== null) cards.push({ label:'Supercap',    value:V, unit:'V',   icon:'⬡', color:colorMap[voltClass], cls:voltClass });
-
-    var html = '<div class="cards">';
-    for (var i = 0; i < cards.length; i++) {
-      var c = cards[i];
-      html += '<div class="card" style="--card-color:'+c.color+'">' +
-        '<div><div class="card-label">'+c.label+'</div>' +
-        '<div><span class="card-value '+c.cls+'">'+c.value+'</span>' +
-        '<span class="card-unit">'+c.unit+'</span></div></div>' +
-        '<div class="card-icon">'+c.icon+'</div></div>';
-    }
-    app.innerHTML = html + '</div>';
-  }
-
-  // ── Détection support Web NFC ────────────────────────────────────
-  var noNfcEl = document.getElementById('no-nfc-msg');
-  if (!('NDEFReader' in window)) {
-    document.getElementById('sync-btn').disabled = true;
-    noNfcEl.innerHTML =
-      '<div class="no-nfc">Web NFC non disponible.<br>' +
-      'Utilisez Android + Chrome pour la synchronisation.</div>';
+    dot.classList.add(dotCls); statusEl.textContent=sys;
+    var cm={'volt-ok':'var(--accent2)','volt-warn':'var(--warn)','volt-low':'var(--danger)'};
+    var cards=[];
+    if(T)cards.push({l:'Température',v:T,u:'°C',i:'☀',c:'var(--accent)',x:''});
+    if(H)cards.push({l:'Humidité',   v:H,u:'%', i:'◎',c:'var(--accent2)',x:''});
+    if(V)cards.push({l:'Supercap',   v:V,u:'V', i:'⬡',c:cm[vCls],x:vCls});
+    var html='<div class="cards">';
+    cards.forEach(function(c){
+      html+='<div class="card" style="--card-color:'+c.c+'">'+
+        '<div><div class="card-label">'+c.l+'</div>'+
+        '<div><span class="card-value '+c.x+'">'+c.v+'</span>'+
+        '<span class="card-unit">'+c.u+'</span></div></div>'+
+        '<div class="card-icon">'+c.i+'</div></div>';
+    });
+    app.innerHTML=html+'</div>';
   }
 
   // ══════════════════════════════════════════════════════════════════
-  // SYNC NFC — écriture config dans le ST25DV
+  // 2. HISTORIQUE 24H (indépendant — n'affecte pas la config panel)
   //
-  // Format de la chaîne écrite (Text NDEF record) :
-  //   CFG:HH,MM,SS,DD,MO,YY,Z1_MIN,D1,Z2_MIN,D2
-  //
-  //   HH,MM,SS     = Heure UTC actuelle
-  //   DD,MO,YY     = Date UTC (YY = 2 derniers chiffres de l'année)
-  //   Z1_MIN       = Offset UTC standard Z1 en minutes (ex: 60 = UTC+1)
-  //   D1           = DST Z1 (1=oui, 0=non)
-  //   Z2_MIN       = Offset UTC standard Z2 en minutes
-  //   D2           = DST Z2
-  //
-  // Exemple : CFG:14,32,00,30,05,26,60,1,540,0
-  //   → UTC 14:32:00 30/05/2026
-  //   → Z1 = Paris/Berlin (UTC+1, DST actif)
-  //   → Z2 = Tokyo (UTC+9, pas de DST)
-  //
-  // Le MCU reçoit l'heure UTC et les offsets.
-  // Il applique lui-même la règle DST à l'affichage (logique existante).
-  // La RTC stocke l'heure UTC (remplace l'ancien stockage CET).
+  // Le chart X va de slot 0 à nowSlot SEULEMENT — pas de zone future.
+  // Slots 0..nowSlot = journée écoulée depuis minuit
+  // Trous = zones de veille (énergie solaire insuffisante)
   // ══════════════════════════════════════════════════════════════════
-  window.syncNFC = async function() {
-    var btn = document.getElementById('sync-btn');
-    var statusEl = document.getElementById('sync-status');
+  var histSection = document.getElementById('hist-section');
 
-    var z1 = TZ[parseInt(selZ1.value)];
-    var z2 = TZ[parseInt(selZ2.value)];
+  if (!H24) {
+    // Pas d'historique — afficher toggle désactivé discret
+    histSection.innerHTML =
+      '<div style="display:flex;align-items:center;justify-content:space-between;'+
+      'padding:12px 16px;background:var(--surface);border:1px solid var(--border);'+
+      'border-radius:10px;margin-bottom:4px;">'+
+      '<div style="display:flex;align-items:center;gap:10px;">'+
+      '<span style="font-size:14px;opacity:.3">📈</span>'+
+      '<span style="font-family:var(--mono);font-size:10px;letter-spacing:.12em;'+
+      'text-transform:uppercase;color:var(--muted)">Historique 24h</span></div>'+
+      '<span style="font-family:var(--mono);font-size:9px;color:var(--muted)">'+
+      'aucune donnée</span></div><hr class="sep">';
+  } else {
 
-    // Heure UTC au moment du tap (légère latence tap acceptée)
-    var now = new Date();
-    var cfg = 'CFG:' +
-      pad(now.getUTCHours())    + ',' +
-      pad(now.getUTCMinutes())  + ',' +
-      pad(now.getUTCSeconds())  + ',' +
-      pad(now.getUTCDate())     + ',' +
-      pad(now.getUTCMonth()+1)  + ',' +
-      String(now.getUTCFullYear()).slice(-2) + ',' +
-      z1.offset + ',' + z1.dst + ',' +
-      z2.offset + ',' + z2.dst;
+    // ── Parser H24 ────────────────────────────────────────────────
+    var slots = {};
+    H24.split(',').forEach(function(e){
+      var m=e.match(/^S(\d+):(-?\d+):(\d+):(\d+)$/);
+      if(m)slots[parseInt(m[1])]={T:parseInt(m[2]),H:parseInt(m[3]),V:parseInt(m[4])/100};
+    });
 
-    statusEl.className = 'sync-status info';
-    statusEl.textContent = 'approchez le téléphone du sat...';
-    btn.disabled = true;
+    // ── Slot courant ──────────────────────────────────────────────
+    // Utilise NOW du sat si disponible, sinon heure du téléphone
+    var nowMin;
+    if(NOW && NOW.length===4){
+      nowMin = parseInt(NOW.substring(0,2))*60 + parseInt(NOW.substring(2,4));
+    } else {
+      var d=new Date(); nowMin=d.getHours()*60+d.getMinutes();
+    }
+    // nowSlot : slot courant. Le chart s'arrête ici (pas de zone future).
+    var nowSlot = Math.min(47, Math.max(1, Math.floor(nowMin/30)));
 
-    try {
-      var ndef = new NDEFReader();
+    // ── Zones de veille ───────────────────────────────────────────
+    // Run de ≥ 2 slots manquants dans la zone 0..nowSlot = veille
+    function findSleepZones(upTo){
+      var z=[],s=null;
+      for(var i=0;i<=upTo+1;i++){
+        var has=i<=upTo&&slots[i]!==undefined;
+        if(!has){if(s===null)s=i;}
+        else{if(s!==null){if(i-s>=2)z.push({s:s,e:i});s=null;}}
+      }
+      if(s!==null&&upTo+1-s>=2)z.push({s:s,e:upTo+1});
+      return z;
+    }
 
-      // write() attend que l'utilisateur approche le tag
-      await ndef.write({
-        records: [{
-          recordType: "text",
-          data: cfg,
-          lang: "en"
-        }]
+    // ── Min/max T pour auto-échelle ───────────────────────────────
+    var tVs=Object.values(slots).map(function(s){return s.T;});
+    var tMin=tVs.length?Math.floor(Math.min.apply(null,tVs))-2:0;
+    var tMax=tVs.length?Math.ceil(Math.max.apply(null,tVs))+2:30;
+
+    // ── Générateur SVG ────────────────────────────────────────────
+    // Axe X : de slot 0 à nowSlot.
+    // Ticks toutes les 4h = toutes les 8 slots, en heures réelles locales.
+    // Pas de zone future — le chart se termine pile à nowSlot.
+    function makeSVG(metricFn, lineColor, yMin, yMax){
+      var W=358,H=90,PL=26,PR=6,PT=8,PB=18;
+      var CW=W-PL-PR, CH=H-PT-PB;
+
+      // X mapé sur 0..nowSlot uniquement — pas d'espace vide à droite
+      function sx(i){ return PL+(i/nowSlot)*CW; }
+      function sy(v){
+        var r=(v-yMin)/(yMax-yMin);
+        return PT+CH-Math.max(0,Math.min(1,r))*CH;
+      }
+      function hhmm(slot){
+        var m=slot*30,hh=Math.floor(m/60)%24,mm=m%60;
+        return (hh<10?'0':'')+hh+(mm===0?'h':':'+(mm<10?'0':'')+mm);
+      }
+
+      var svg='<svg viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg" class="chart-svg">';
+
+      // Grille horizontale
+      for(var g=0;g<=2;g++){
+        var gy=PT+(g/2)*CH;
+        var gv=yMax-(g/2)*(yMax-yMin);
+        svg+='<line x1="'+PL+'" y1="'+gy.toFixed(1)+'" x2="'+(PL+CW)+'" y2="'+gy.toFixed(1)+'" stroke="#1e2128" stroke-width="0.5"/>';
+        svg+='<text x="'+(PL-3)+'" y="'+gy.toFixed(1)+'" text-anchor="end" dominant-baseline="middle" font-size="7" fill="#4a5060" font-family="monospace">'+gv.toFixed(0)+'</text>';
+      }
+
+      // Zones de veille
+      findSleepZones(nowSlot).forEach(function(z){
+        var x1=sx(z.s);
+        var x2=z.e>nowSlot ? sx(nowSlot) : sx(z.e);
+        var zw=Math.max(1,x2-x1);
+        svg+='<rect x="'+x1.toFixed(1)+'" y="'+PT+'" width="'+zw.toFixed(1)+'" height="'+CH+'" fill="rgba(255,255,255,0.025)"/>';
+        // Bordures pointillées
+        svg+='<line x1="'+x1.toFixed(1)+'" y1="'+PT+'" x2="'+x1.toFixed(1)+'" y2="'+(PT+CH)+'" stroke="#1a1d2e" stroke-width="0.8" stroke-dasharray="2,3"/>';
+        if(z.e<=nowSlot)
+          svg+='<line x1="'+x2.toFixed(1)+'" y1="'+PT+'" x2="'+x2.toFixed(1)+'" y2="'+(PT+CH)+'" stroke="#1a1d2e" stroke-width="0.8" stroke-dasharray="2,3"/>';
+        // Label SLEEP vertical si zone assez large
+        if(zw>18){
+          var cx=((x1+x2)/2).toFixed(1),cy=(PT+CH/2).toFixed(1);
+          svg+='<text x="'+cx+'" y="'+cy+'" text-anchor="middle" dominant-baseline="middle" '+
+               'font-size="6" fill="#23263a" font-family="monospace" letter-spacing="1" '+
+               'transform="rotate(-90,'+cx+','+cy+')">SLEEP</text>';
+        }
       });
 
-      statusEl.className = 'sync-status ok';
-      statusEl.textContent = '✓ sync envoyée — sat se met à jour au prochain réveil';
-
-    } catch(e) {
-      statusEl.className = 'sync-status error';
-      if (e.name === 'NotAllowedError') {
-        statusEl.textContent = 'Permission refusée — activez NFC dans les paramètres';
-      } else if (e.name === 'AbortError') {
-        statusEl.textContent = 'Annulé';
-      } else {
-        statusEl.textContent = 'Erreur : ' + e.message;
+      // Ticks axe X toutes les 8 slots (4h), dans la plage 0..nowSlot
+      for(var tick=0;tick<=nowSlot;tick+=8){
+        var tx=sx(tick);
+        svg+='<line x1="'+tx.toFixed(1)+'" y1="'+(PT+CH)+'" x2="'+tx.toFixed(1)+'" y2="'+(PT+CH+3)+'" stroke="#4a5060" stroke-width="0.5"/>';
+        svg+='<text x="'+tx.toFixed(1)+'" y="'+(H-2)+'" text-anchor="middle" font-size="6.5" fill="#4a5060" font-family="monospace">'+hhmm(tick)+'</text>';
       }
+      // Tick final = heure courante (Maint.)
+      var nx=sx(nowSlot);
+      svg+='<line x1="'+nx.toFixed(1)+'" y1="'+(PT+CH)+'" x2="'+nx.toFixed(1)+'" y2="'+(PT+CH+3)+'" stroke="#9aaabb" stroke-width="0.8"/>';
+      svg+='<text x="'+nx.toFixed(1)+'" y="'+(H-2)+'" text-anchor="end" font-size="6.5" fill="#9aaabb" font-family="monospace">Maint.</text>';
+
+      // Ligne de données — segments séparés aux zones de veille
+      var segments=[],cur=[];
+      for(var i=0;i<=nowSlot;i++){
+        if(slots[i]!==undefined){
+          cur.push(sx(i).toFixed(1)+','+sy(metricFn(slots[i])).toFixed(1));
+        } else {
+          if(cur.length>0){segments.push(cur.slice());cur=[];}
+        }
+      }
+      if(cur.length>0)segments.push(cur);
+
+      segments.forEach(function(seg){
+        if(!seg.length)return;
+        var pts=seg.join(' ');
+        if(seg.length>1){
+          var fx=seg[0].split(',')[0],lx=seg[seg.length-1].split(',')[0],by=PT+CH;
+          svg+='<polygon points="'+fx+','+by+' '+pts+' '+lx+','+by+'" fill="'+lineColor+'" opacity="0.08"/>';
+          svg+='<polyline points="'+pts+'" fill="none" stroke="'+lineColor+'" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>';
+        }
+        seg.forEach(function(pt){
+          var xy=pt.split(',');
+          svg+='<circle cx="'+xy[0]+'" cy="'+xy[1]+'" r="1.8" fill="'+lineColor+'"/>';
+        });
+      });
+
+      svg+='</svg>';
+      return svg;
     }
 
-    btn.disabled = false;
+    // ── Stats rapides pour le header du toggle ─────────────────────
+    function quickStats(){
+      var tv=Object.values(slots).map(function(s){return s.T;});
+      if(!tv.length)return '';
+      return 'T: '+Math.min.apply(null,tv)+'→'+Math.max.apply(null,tv)+'°C';
+    }
+
+    var dataCount=Object.keys(slots).length;
+    var sleepCount=findSleepZones(nowSlot).length;
+
+    var html=
+      // Bouton toggle — style card cliquable
+      '<div class="hist-toggle-row" onclick="toggleHist()" id="hist-toggle-row">'+
+        '<div class="hist-left">'+
+          '<span class="hist-icon">📈</span>'+
+          '<div>'+
+            '<div class="hist-label">Historique 24h</div>'+
+            '<div class="hist-meta">'+
+              dataCount+' relevé'+(dataCount>1?'s':'')+
+              (sleepCount?' · '+sleepCount+' veille'+(sleepCount>1?'s':''):'')+
+              (quickStats()?' · '+quickStats():'')+
+            '</div>'+
+          '</div>'+
+        '</div>'+
+        '<span class="hist-chevron" id="hist-chev">▼</span>'+
+      '</div>'+
+
+      // Corps des graphes (caché par défaut)
+      '<div class="hist-body" id="hist-body">'+
+        '<div class="chart-wrap">'+
+          '<div class="chart-meta">'+
+            '<span class="chart-name">Température</span>'+
+            '<span class="chart-range">'+tMin+'→'+tMax+' °C</span>'+
+          '</div>'+
+          makeSVG(function(s){return s.T;},'var(--accent)',tMin,tMax)+
+        '</div>'+
+        '<div class="chart-wrap">'+
+          '<div class="chart-meta">'+
+            '<span class="chart-name">Humidité</span>'+
+            '<span class="chart-range">30→100 %</span>'+
+          '</div>'+
+          makeSVG(function(s){return s.H;},'var(--accent2)',30,100)+
+        '</div>'+
+        '<div class="chart-wrap">'+
+          '<div class="chart-meta">'+
+            '<span class="chart-name">Supercap</span>'+
+            '<span class="chart-range">2.8→4.3 V</span>'+
+          '</div>'+
+          makeSVG(function(s){return s.V;},'#ffb74d',2.8,4.3)+
+        '</div>'+
+        '<div class="sleep-legend">'+
+          '<div class="sleep-swatch"></div>'+
+          '<span>Zone claire = veille (énergie solaire insuffisante)</span>'+
+        '</div>'+
+      '</div>'+
+      '<hr class="sep">';
+
+    histSection.innerHTML = html;
+
+    window.toggleHist = function(){
+      var body=document.getElementById('hist-body');
+      var chev=document.getElementById('hist-chev');
+      var open=body.classList.contains('open');
+      if(open){body.classList.remove('open');chev.classList.remove('open');}
+      else    {body.classList.add('open');   chev.classList.add('open');   }
+    };
+  }
+
+  // ══════════════════════════════════════════════════════════════════
+  // 3. HORLOGE UTC + FUSEAUX — toujours exécuté
+  //    Même sans données URL, la config panel est fonctionnelle.
+  // ══════════════════════════════════════════════════════════════════
+  function pad(n){return n<10?'0'+n:''+n;}
+  function updateClock(){
+    var now=new Date();
+    document.getElementById('utc-clock').textContent=
+      pad(now.getUTCHours())+':'+pad(now.getUTCMinutes())+':'+pad(now.getUTCSeconds());
+  }
+  updateClock(); setInterval(updateClock,1000);
+
+  var TZ=[
+    {name:"Honolulu (UTC-10)",          offset:-600,dst:0},
+    {name:"Anchorage (UTC-9)",          offset:-540,dst:1},
+    {name:"Los Angeles (UTC-8)",        offset:-480,dst:1},
+    {name:"Denver (UTC-7)",             offset:-420,dst:1},
+    {name:"Chicago (UTC-6)",            offset:-360,dst:1},
+    {name:"New York (UTC-5)",           offset:-300,dst:1},
+    {name:"Caracas (UTC-4)",            offset:-240,dst:0},
+    {name:"Buenos Aires (UTC-3)",       offset:-180,dst:0},
+    {name:"Açores (UTC-1)",             offset: -60,dst:1},
+    {name:"Londres / Lisbonne (UTC+0)", offset:   0,dst:1},
+    {name:"Paris / Berlin (UTC+1)",     offset:  60,dst:1},
+    {name:"Helsinki / Athènes (UTC+2)", offset: 120,dst:1},
+    {name:"Moscou (UTC+3)",             offset: 180,dst:0},
+    {name:"Dubaï (UTC+4)",              offset: 240,dst:0},
+    {name:"Karachi (UTC+5)",            offset: 300,dst:0},
+    {name:"Mumbai / Delhi (UTC+5:30)",  offset: 330,dst:0},
+    {name:"Dhaka (UTC+6)",              offset: 360,dst:0},
+    {name:"Bangkok / Jakarta (UTC+7)",  offset: 420,dst:0},
+    {name:"Pékin / Singapour (UTC+8)",  offset: 480,dst:0},
+    {name:"Tokyo / Séoul (UTC+9)",      offset: 540,dst:0},
+    {name:"Sydney (UTC+10)",            offset: 600,dst:1},
+    {name:"Nouméa (UTC+11)",            offset: 660,dst:0},
+    {name:"Auckland (UTC+12)",          offset: 720,dst:1}
+  ];
+
+  function getStdOff(){
+    var j=new Date(Date.UTC(2024,0,15)),ju=new Date(Date.UTC(2024,6,15));
+    var jo=-j.getTimezoneOffset(),juo=-ju.getTimezoneOffset();
+    return jo<=juo?jo:juo;
+  }
+  function findTZ(off){
+    var best=0,bd=Infinity;
+    TZ.forEach(function(tz,i){var d=Math.abs(tz.offset-off);if(d<bd){bd=d;best=i;}});
+    return best;
+  }
+
+  var sZ1=document.getElementById('sel-z1');
+  var sZ2=document.getElementById('sel-z2');
+  var di=findTZ(getStdOff());
+  TZ.forEach(function(tz,i){
+    var o1=document.createElement('option');
+    var o2=document.createElement('option');
+    o1.value=o2.value=i;
+    o1.textContent=o2.textContent=tz.name;
+    sZ1.appendChild(o1); sZ2.appendChild(o2);
+  });
+  sZ1.value=di; sZ2.value=(di===10)?19:10;
+
+  if(!('NDEFReader' in window)){
+    document.getElementById('sync-btn').disabled=true;
+    document.getElementById('no-nfc-msg').innerHTML=
+      '<div class="no-nfc">Web NFC non disponible.<br>Utilisez Android + Chrome.</div>';
+  }
+
+  window.syncNFC=async function(){
+    var btn=document.getElementById('sync-btn');
+    var st=document.getElementById('sync-status');
+    var z1=TZ[parseInt(sZ1.value)];
+    var z2=TZ[parseInt(sZ2.value)];
+    var now=new Date();
+    var cfg='CFG:'+pad(now.getUTCHours())+','+pad(now.getUTCMinutes())+','+
+      pad(now.getUTCSeconds())+','+pad(now.getUTCDate())+','+
+      pad(now.getUTCMonth()+1)+','+String(now.getUTCFullYear()).slice(-2)+','+
+      z1.offset+','+z1.dst+','+z2.offset+','+z2.dst;
+    st.className='sync-status info';
+    st.textContent='approchez le téléphone du sat...';
+    btn.disabled=true;
+    try{
+      var ndef=new NDEFReader();
+      await ndef.write({records:[{recordType:"text",data:cfg,lang:"en"}]});
+      st.className='sync-status ok';
+      st.textContent='✓ sync envoyée — sat applique au prochain réveil (< 60s)';
+    }catch(e){
+      st.className='sync-status error';
+      st.textContent=e.name==='NotAllowedError'?'Permission refusée':'Erreur : '+e.message;
+    }
+    btn.disabled=false;
   };
 
 })();
