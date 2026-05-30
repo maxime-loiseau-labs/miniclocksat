@@ -119,6 +119,33 @@
   .sync-status.ok{color:var(--accent2)}.sync-status.error{color:var(--danger)}.sync-status.info{color:var(--muted)}
   .no-nfc{font-size:11px;color:var(--warn);text-align:center;margin-top:10px;line-height:1.6;}
 
+  /* ── iOS sync UI ───────────────────────────────────────────────── */
+  .cfg-box{background:var(--bg);border:1px solid var(--border);border-radius:8px;
+    padding:10px 12px;margin-top:14px;position:relative;}
+  .cfg-box-label{font-family:var(--mono);font-size:9px;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+  .cfg-string{font-family:var(--mono);font-size:11px;color:var(--accent);
+    word-break:break-all;line-height:1.5;padding-right:60px;user-select:all;}
+  .cfg-copy-btn{position:absolute;top:10px;right:10px;background:transparent;
+    border:1px solid var(--border);border-radius:6px;padding:4px 8px;
+    font-family:var(--mono);font-size:9px;color:var(--muted);
+    cursor:pointer;transition:border-color .15s,color .15s;white-space:nowrap;}
+  .cfg-copy-btn:hover{border-color:var(--accent);color:var(--accent);}
+  .cfg-copy-btn.copied{border-color:var(--accent2);color:var(--accent2);}
+  .ios-steps{margin-top:14px;display:flex;flex-direction:column;gap:8px;}
+  .ios-step{display:flex;align-items:flex-start;gap:10px;}
+  .ios-step-num{min-width:20px;height:20px;border-radius:50%;background:var(--border);
+    color:var(--muted);font-family:var(--mono);font-size:10px;
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+  .ios-step-txt{font-size:12px;color:var(--muted);line-height:1.5;}
+  .ios-step-txt strong{color:var(--text);}
+  .ios-open-btn{display:flex;align-items:center;justify-content:center;gap:8px;
+    width:100%;margin-top:14px;padding:12px;background:transparent;
+    border:1px solid var(--accent);border-radius:10px;color:var(--accent);
+    font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+    cursor:pointer;text-decoration:none;transition:background .15s;-webkit-tap-highlight-color:transparent;}
+  .ios-open-btn:hover{background:rgba(79,195,247,.08);}
+
   footer{display:flex;justify-content:space-between;padding-top:16px;gap:8px;}
   .footer-url{font-family:var(--mono);font-size:9px;color:var(--border);
     overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
@@ -150,17 +177,15 @@
     <div class="utc-label">UTC — heure envoyée au sat</div>
     <div class="field-row">
       <div class="field-label">Fuseau principal Z1 (auto-détecté)</div>
-      <select id="sel-z1"></select>
+      <select id="sel-z1" onchange="updateCFG()"></select>
     </div>
     <div class="field-row">
       <div class="field-label">Fuseau secondaire Z2</div>
-      <select id="sel-z2"></select>
+      <select id="sel-z2" onchange="updateCFG()"></select>
     </div>
-    <button class="sync-btn" id="sync-btn" onclick="syncNFC()">
-      ▶ Approcher et synchroniser
-    </button>
+    <!-- Zone action : Android (Web NFC) ou iOS (copier/coller) — remplie par JS -->
+    <div id="sync-action"></div>
     <div class="sync-status info" id="sync-status"></div>
-    <div id="no-nfc-msg"></div>
   </div>
 
   <footer>
@@ -497,36 +522,143 @@
   });
   sZ1.value=di; sZ2.value=(di===10)?19:10;
 
-  if(!('NDEFReader' in window)){
-    document.getElementById('sync-btn').disabled=true;
-    document.getElementById('no-nfc-msg').innerHTML=
-      '<div class="no-nfc">Web NFC non disponible.<br>Utilisez Android + Chrome.</div>';
-  }
+  // ── Détection iOS ────────────────────────────────────────────────
+  // iOS = Safari/WebKit sur iPhone/iPad → pas de Web NFC API
+  // Android Chrome → NDEFReader disponible
+  var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
-  window.syncNFC=async function(){
-    var btn=document.getElementById('sync-btn');
-    var st=document.getElementById('sync-status');
+  // ── Construction de la chaîne CFG ────────────────────────────────
+  // Recalculée à chaque appel car l'heure UTC change en continu.
+  // Format : CFG:HH,MM,SS,DD,MO,YY,Z1_MIN,D1,Z2_MIN,D2
+  function buildCFG(){
     var z1=TZ[parseInt(sZ1.value)];
     var z2=TZ[parseInt(sZ2.value)];
     var now=new Date();
-    var cfg='CFG:'+pad(now.getUTCHours())+','+pad(now.getUTCMinutes())+','+
+    return 'CFG:'+pad(now.getUTCHours())+','+pad(now.getUTCMinutes())+','+
       pad(now.getUTCSeconds())+','+pad(now.getUTCDate())+','+
       pad(now.getUTCMonth()+1)+','+String(now.getUTCFullYear()).slice(-2)+','+
       z1.offset+','+z1.dst+','+z2.offset+','+z2.dst;
-    st.className='sync-status info';
-    st.textContent='approchez le téléphone du sat...';
-    btn.disabled=true;
-    try{
-      var ndef=new NDEFReader();
-      await ndef.write({records:[{recordType:"text",data:cfg,lang:"en"}]});
-      st.className='sync-status ok';
-      st.textContent='✓ sync envoyée — sat applique au prochain réveil (< 60s)';
-    }catch(e){
-      st.className='sync-status error';
-      st.textContent=e.name==='NotAllowedError'?'Permission refusée':'Erreur : '+e.message;
-    }
-    btn.disabled=false;
+  }
+
+  // ── Mise à jour de l'affichage CFG (iOS uniquement) ─────────────
+  // Appelée quand l'utilisateur change Z1 ou Z2, et toutes les secondes
+  // pour garder l'heure à jour dans le code affiché.
+  window.updateCFG = function(){
+    var el=document.getElementById('cfg-string-display');
+    if(el) el.textContent=buildCFG();
   };
+
+  // ── Rendu zone action selon l'OS ─────────────────────────────────
+  var actionEl=document.getElementById('sync-action');
+
+  if(isIOS){
+    // ── UI iOS : afficher le code CFG à copier + lien NFC Tools ────
+    //
+    // Workflow iOS :
+    //   1. L'utilisateur copie le code CFG généré
+    //   2. Ouvre NFC Tools (wakdev) depuis le bouton
+    //   3. Dans NFC Tools : Write → Add record → Text → Coller → Scan
+    //
+    // NFC Tools App Store ID : 1252962749
+    // Le lien itms-apps:// ouvre l'app directement si installée,
+    // sinon redirige vers l'App Store automatiquement.
+
+    actionEl.innerHTML=
+      '<div class="cfg-box">'+
+        '<div class="cfg-box-label">Code à copier dans NFC Tools</div>'+
+        '<div class="cfg-string" id="cfg-string-display">'+buildCFG()+'</div>'+
+        '<button class="cfg-copy-btn" id="cfg-copy-btn" onclick="copyCFG()">Copier</button>'+
+      '</div>'+
+
+      '<div class="ios-steps">'+
+        '<div class="ios-step">'+
+          '<div class="ios-step-num">1</div>'+
+          '<div class="ios-step-txt">Appuyez sur <strong>Copier</strong> ci-dessus</div>'+
+        '</div>'+
+        '<div class="ios-step">'+
+          '<div class="ios-step-num">2</div>'+
+          '<div class="ios-step-txt">Ouvrez <strong>NFC Tools</strong> avec le bouton ci-dessous</div>'+
+        '</div>'+
+        '<div class="ios-step">'+
+          '<div class="ios-step-num">3</div>'+
+          '<div class="ios-step-txt">Dans NFC Tools : <strong>Write → Add record → Text</strong><br>Collez le code → appuyez sur <strong>Write / Scan</strong></div>'+
+        '</div>'+
+      '</div>'+
+
+      '<a class="ios-open-btn" href="https://apps.apple.com/app/nfc-tools/id1252962749">'+
+        '&#9661; Ouvrir NFC Tools &rarr;'+
+      '</a>';
+
+
+    // Mettre à jour le code CFG toutes les secondes (heure change)
+    setInterval(window.updateCFG, 1000);
+
+    // Fonction copier dans le presse-papier
+    window.copyCFG = function(){
+      var cfg=buildCFG();
+      var btn=document.getElementById('cfg-copy-btn');
+      // Mettre à jour l'affichage avec l'heure la plus récente
+      document.getElementById('cfg-string-display').textContent=cfg;
+      // Copier
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(cfg).then(function(){
+          btn.textContent='✓ Copié'; btn.classList.add('copied');
+          setTimeout(function(){btn.textContent='Copier';btn.classList.remove('copied');},2000);
+        }).catch(function(){ fallbackCopy(cfg,btn); });
+      } else {
+        fallbackCopy(cfg,btn);
+      }
+    };
+
+    // Fallback pour les navigateurs sans navigator.clipboard
+    function fallbackCopy(text,btn){
+      var ta=document.createElement('textarea');
+      ta.value=text; ta.style.position='fixed'; ta.style.opacity='0';
+      document.body.appendChild(ta); ta.focus(); ta.select();
+      try{
+        document.execCommand('copy');
+        btn.textContent='✓ Copié'; btn.classList.add('copied');
+        setTimeout(function(){btn.textContent='Copier';btn.classList.remove('copied');},2000);
+      }catch(e){
+        btn.textContent='Erreur'; 
+      }
+      document.body.removeChild(ta);
+    }
+
+  } else if('NDEFReader' in window){
+    // ── UI Android : bouton Web NFC direct ──────────────────────────
+    actionEl.innerHTML=
+      '<button class="sync-btn" id="sync-btn" onclick="syncNFC()">'+
+        '▶ Approcher et synchroniser'+
+      '</button>';
+
+    window.syncNFC=async function(){
+      var btn=document.getElementById('sync-btn');
+      var st=document.getElementById('sync-status');
+      var cfg=buildCFG();
+      st.className='sync-status info';
+      st.textContent='approchez le téléphone du sat...';
+      btn.disabled=true;
+      try{
+        var ndef=new NDEFReader();
+        await ndef.write({records:[{recordType:"text",data:cfg,lang:"en"}]});
+        st.className='sync-status ok';
+        st.textContent='✓ sync envoyée — sat applique au prochain réveil (< 60s)';
+      }catch(e){
+        st.className='sync-status error';
+        st.textContent=e.name==='NotAllowedError'?'Permission refusée':'Erreur : '+e.message;
+      }
+      btn.disabled=false;
+    };
+
+  } else {
+    // ── Navigateur desktop ou non supporté ──────────────────────────
+    actionEl.innerHTML=
+      '<div class="no-nfc">'+
+        'Web NFC non disponible sur ce navigateur.<br>'+
+        'Utilisez <strong>Android + Chrome</strong> ou <strong>iPhone + NFC Tools</strong>.'+
+      '</div>';
+  }
 
 })();
 </script>
