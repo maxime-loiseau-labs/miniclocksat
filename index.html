@@ -98,8 +98,13 @@
   .config-panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;}
   .config-title{font-family:var(--mono);font-size:10px;letter-spacing:.14em;
     text-transform:uppercase;color:var(--muted);margin-bottom:14px;}
-  .utc-clock{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--accent);margin-bottom:2px;}
-  .utc-label{font-family:var(--mono);font-size:9px;letter-spacing:.08em;color:var(--muted);margin-bottom:16px;}
+  .local-clock{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--accent);margin-bottom:2px;}
+  .local-label{font-family:var(--mono);font-size:9px;letter-spacing:.08em;color:var(--muted);margin-bottom:16px;}
+  /* Champ texte ville Z2 */
+  .city-input{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;
+    padding:8px 10px;color:var(--text);font-family:var(--mono);font-size:13px;letter-spacing:.05em;}
+  .city-input:focus{outline:none;border-color:var(--accent);}
+  .char-count{font-size:9px;color:var(--muted);text-align:right;margin-top:3px;font-family:var(--mono);}
   .field-row{margin-bottom:12px;}
   .field-label{font-size:11px;color:var(--muted);margin-bottom:4px;}
   select{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;
@@ -173,15 +178,22 @@
   <!-- Config NFC — toujours visible, même sans données URL -->
   <div class="config-panel">
     <div class="config-title">Sync Mini Sat</div>
-    <div class="utc-clock" id="utc-clock">--:--:--</div>
-    <div class="utc-label">UTC — heure envoyée au sat</div>
+    <div class="local-clock" id="local-clock">--:--:--</div>
+    <div class="local-label" id="local-label">Heure locale</div>
     <div class="field-row">
       <div class="field-label">Fuseau principal Z1 (auto-détecté)</div>
       <select id="sel-z1" onchange="updateCFG()"></select>
     </div>
     <div class="field-row">
       <div class="field-label">Fuseau secondaire Z2</div>
-      <select id="sel-z2" onchange="updateCFG()"></select>
+      <select id="sel-z2" onchange="onZ2Change()"></select>
+    </div>
+    <div class="field-row">
+      <div class="field-label">Ville affichée (Z2) <span style="font-size:9px;color:var(--muted)">— max 8 car. — affiché sur l'écran</span></div>
+      <input type="text" id="city-input" class="city-input"
+             maxlength="8" placeholder="ex: Tokyo"
+             oninput="onCityInput()" autocomplete="off" autocorrect="off" spellcheck="false">
+      <div class="char-count" id="char-count">0/8</div>
     </div>
     <!-- Zone action : Android (Web NFC) ou iOS (copier/coller) — remplie par JS -->
     <div id="sync-action"></div>
@@ -466,10 +478,15 @@
   //    Même sans données URL, la config panel est fonctionnelle.
   // ══════════════════════════════════════════════════════════════════
   function pad(n){return n<10?'0'+n:''+n;}
+
+  // ── Horloge locale (affichage) + horloge UTC (envoyée au sat) ────────────
+  // L'utilisateur voit son heure locale — la conversion UTC est transparente.
+  // La chaîne CFG contient l'heure UTC calculée au moment de l'envoi.
   function updateClock(){
     var now=new Date();
-    document.getElementById('utc-clock').textContent=
-      pad(now.getUTCHours())+':'+pad(now.getUTCMinutes())+':'+pad(now.getUTCSeconds());
+    // Heure locale du téléphone — affichage uniquement
+    document.getElementById('local-clock').textContent=
+      now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
   }
   updateClock(); setInterval(updateClock,1000);
 
@@ -522,27 +539,66 @@
   });
   sZ1.value=di; sZ2.value=(di===10)?19:10;
 
+  // Initialiser le champ ville avec la valeur par défaut de Z2
+  (function(){
+    var cityInput=document.getElementById('city-input');
+    var charCount=document.getElementById('char-count');
+    if(cityInput){
+      var city=extractCity(TZ[parseInt(sZ2.value)].name);
+      cityInput.value=city;
+      charCount.textContent=city.length+'/8';
+    }
+  })();
+
   // ── Détection iOS ────────────────────────────────────────────────
   // iOS = Safari/WebKit sur iPhone/iPad → pas de Web NFC API
   // Android Chrome → NDEFReader disponible
   var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
-  // ── Construction de la chaîne CFG ────────────────────────────────
-  // Recalculée à chaque appel car l'heure UTC change en continu.
-  // Format : CFG:HH,MM,SS,DD,MO,YY,Z1_MIN,D1,Z2_MIN,D2
+  // ── Extraction du nom de ville depuis l'entrée TZ ─────────────────
+  // "Tokyo / Séoul (UTC+9)"  → "Tokyo"
+  // "Los Angeles (UTC-8)"    → "Los Ange" (tronqué à 8 chars)
+  // "Mumbai / Delhi (UTC+5:30)" → "Mumbai"
+  function extractCity(tzName){
+    var city = tzName.replace(/\(.*\)/,'').split('/')[0].trim();
+    return city.substring(0,8).trim();
+  }
+
+  // ── Mise à jour du champ ville quand Z2 change ─────────────────────
+  window.onZ2Change = function(){
+    var cityInput = document.getElementById('city-input');
+    var charCount = document.getElementById('char-count');
+    var city = extractCity(TZ[parseInt(sZ2.value)].name);
+    cityInput.value = city;
+    charCount.textContent = city.length + '/8';
+    updateCFG();
+  };
+
+  // ── Mise à jour compteur caractères ville ──────────────────────────
+  window.onCityInput = function(){
+    var v = document.getElementById('city-input').value;
+    document.getElementById('char-count').textContent = v.length + '/8';
+    updateCFG();
+  };
+
+  // ── Construction de la chaîne CFG ─────────────────────────────────
+  // Format : CFG:HH,MM,SS,DD,MO,YY,Z1_MIN,D1,Z2_MIN,D2,CITY
+  //   CITY = nom de ville Z2 (optionnel, max 8 chars ASCII)
+  //   L'heure UTC est calculée au moment de l'appel pour être précise.
   function buildCFG(){
     var z1=TZ[parseInt(sZ1.value)];
     var z2=TZ[parseInt(sZ2.value)];
+    var city=(document.getElementById('city-input').value||'').substring(0,8);
     var now=new Date();
     return 'CFG:'+pad(now.getUTCHours())+','+pad(now.getUTCMinutes())+','+
       pad(now.getUTCSeconds())+','+pad(now.getUTCDate())+','+
       pad(now.getUTCMonth()+1)+','+String(now.getUTCFullYear()).slice(-2)+','+
-      z1.offset+','+z1.dst+','+z2.offset+','+z2.dst;
+      z1.offset+','+z1.dst+','+z2.offset+','+z2.dst+','+city;
   }
 
-  // ── Mise à jour de l'affichage CFG (iOS uniquement) ─────────────
-  // Appelée quand l'utilisateur change Z1 ou Z2, et toutes les secondes
-  // pour garder l'heure à jour dans le code affiché.
+  // ── Mise à jour de l'affichage CFG (iOS uniquement) ───────────────
+  // Appelée quand Z1/Z2/ville changent, et toutes les secondes pour
+  // garder l'heure UTC à jour dans le code copié.
   window.updateCFG = function(){
     var el=document.getElementById('cfg-string-display');
     if(el) el.textContent=buildCFG();
