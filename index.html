@@ -9,7 +9,7 @@
 
 :root {
   --space:    #05091c;
-  --panel:    #f1f0e9;
+  --panel:    #F5F3EE;   /* blanc cassé légèrement chaud */
   --ink:      #141412;
   --ink-2:    #3c3c38;
   --ink-3:    #6e6e68;
@@ -20,8 +20,8 @@
   --border:   rgba(0,0,0,0.08);
   --text:     #141412;
   --muted:    #6e6e68;
-  --accent:   #1a3a68;
-  --accent2:  #1a5832;
+  --accent:   #1565C0;   /* bleu vif température */
+  --accent2:  #2E7D32;   /* vert vif humidité */
   --warn:     #854d0e;
   --danger:   #991b1b;
   --mono:     'Space Mono', monospace;
@@ -162,7 +162,8 @@ header {
 .card-value.volt-warn { color: #92400e; }
 .card-value.volt-low  { color: #991b1b; }
 .card-unit { font-size: 16px; color: var(--ink-3); margin-left: 3px; }
-.card-icon { font-size: 28px; opacity: .08; user-select: none; }
+.card-icon { font-size: 28px; opacity: .15; user-select: none; display:flex; align-items:center; justify-content:center; }
+.sat-logo  { color: rgba(241,240,233,0.55); flex-shrink:0; }
 
 /* ── SANS DONNÉES ─────────────────────────────────────────────────────── */
 .no-data {
@@ -332,7 +333,7 @@ select:focus { outline: none; border-color: rgba(26,58,104,0.4); }
 .sync-status.info  { color: var(--ink-3); }
 
 .no-nfc {
-  font-size: 10px; color: #92400e;
+  font-size: 10px; color: #E65100;  /* orange chaud */
   text-align: center; margin-top: 10px; line-height: 1.7;
 }
 
@@ -411,6 +412,25 @@ footer {
         <div class="logo-sub">TELEMETRY MODULE</div>
       </div>
     </div>
+      <svg class="sat-logo" width="66" height="30" viewBox="0 0 66 30" xmlns="http://www.w3.org/2000/svg">
+        <!-- Panneau solaire gauche -->
+        <rect x="0"  y="12" width="18" height="6" fill="currentColor"/>
+        <!-- Connecteur gauche -->
+        <rect x="18" y="13" width="5"  height="4" fill="currentColor"/>
+        <!-- Corps -->
+        <rect x="23" y="8"  width="20" height="18" fill="currentColor"/>
+        <rect x="26" y="11" width="14" height="12" fill="#F5F3EE"/>
+        <!-- Connecteur droit -->
+        <rect x="43" y="13" width="5"  height="4" fill="currentColor"/>
+        <!-- Panneau solaire droit -->
+        <rect x="48" y="12" width="18" height="6" fill="currentColor"/>
+        <!-- Tête / antenne -->
+        <rect x="28" y="1"  width="10" height="7" fill="currentColor"/>
+        <rect x="30" y="2"  width="6"  height="5" fill="#F5F3EE"/>
+        <rect x="32" y="3"  width="2"  height="3" fill="currentColor"/>
+        <!-- Cou -->
+        <rect x="32" y="8"  width="2"  height="1" fill="currentColor"/>
+      </svg>
     <div class="status-dot">
       <div class="dot" id="dot"></div>
       <span id="status-text">—</span>
@@ -490,9 +510,11 @@ footer {
     dot.classList.add(dotCls); statusEl.textContent=sys;
     var cm={'volt-ok':'var(--accent2)','volt-warn':'var(--warn)','volt-low':'var(--danger)'};
     var cards=[];
+    var iDrop='<svg width="22" height="28" viewBox="0 0 22 28"><path d="M11 1C11 1 1 13 1 19a10 10 0 0020 0C21 13 11 1 11 1z" fill="currentColor"/></svg>';
+    var iBatt='<svg width="28" height="17" viewBox="0 0 28 17"><rect x="0" y="1" width="22" height="15" rx="2.5" stroke="currentColor" stroke-width="1.5" fill="none"/><rect x="22" y="5" width="6" height="7" rx="1.5" fill="currentColor"/><rect x="3" y="4" width="13" height="9" rx="1.5" fill="currentColor" opacity="0.5"/></svg>';
     if(T)cards.push({l:'Température',v:T,u:'°C',i:'☀',c:'var(--accent)',x:''});
-    if(H)cards.push({l:'Humidité',   v:H,u:'%', i:'◎',c:'var(--accent2)',x:''});
-    if(V)cards.push({l:'Supercap',   v:V,u:'V', i:'⬡',c:cm[vCls],x:vCls});
+    if(H)cards.push({l:'Humidité',   v:H,u:'%', i:iDrop,c:'var(--accent2)',x:''});
+    if(V)cards.push({l:'Supercap',   v:V,u:'V', i:iBatt,c:cm[vCls],x:vCls});
     var html='<div class="cards">';
     cards.forEach(function(c){
       html+='<div class="card" style="--card-color:'+c.c+'">'+
@@ -583,12 +605,15 @@ footer {
       return ordered;
     }
 
-    // Convertit un step en heure locale réelle
+    // Convertit un step en heure locale du téléphone (slots en UTC)
     function stepToLocalHHMM(step){
-      var nowMin=nowSlot*30;
       var minsAgo=(47-step)*30;
-      var absMin=(nowMin-minsAgo+1440)%1440;
-      var hh=Math.floor(absMin/60)%24,mm=absMin%60;
+      var nowUtcMin=nowSlot*30;
+      var absUtcMin=(nowUtcMin-minsAgo+1440)%1440;
+      var utcH=Math.floor(absUtcMin/60), utcM=absUtcMin%60;
+      var now=new Date();
+      var d=new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth(),now.getUTCDate(),utcH,utcM,0));
+      var hh=d.getHours(), mm=d.getMinutes();
       return (hh<10?'0':'')+hh+(mm===0?'h':':'+(mm<10?'0':'')+mm);
     }
 
@@ -604,11 +629,14 @@ footer {
       return zones;
     }
 
-    function makeSVG(metricFn, lineColor, yMin, yMax){
-      var W=358,H=82,PL=24,PR=4,PT=4,PB=14;
+    // makeSVG — graphe complet avec gradient, Y labels, X ticks 4h, dots, SLEEP
+    var _gid=0;
+    function makeSVG(metricFn, lineColor, yMin, yMax, yTicks){
+      var W=358,H=100,PL=30,PR=5,PT=6,PB=18;
       var CW=W-PL-PR, CH=H-PT-PB;
       var N=48;
       var ordered=build24h();
+      var gid='g'+(++_gid);
 
       function sx(s){ return PL+(s/(N-1))*CW; }
       function sy(v){
@@ -618,53 +646,66 @@ footer {
 
       var svg='<svg viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg" class="chart-svg">';
 
-      // 2 lignes de grille horizontales très légères (milieu et haut seulement)
-      [0.25,0.75].forEach(function(frac){
-        var gy=PT+frac*CH;
-        svg+='<line x1="'+PL+'" y1="'+gy.toFixed(1)+'" x2="'+( PL+CW)+'" y2="'+gy.toFixed(1)+'" stroke="rgba(0,0,0,0.07)" stroke-width="0.5"/>';
+      // Gradient vertical pour le remplissage sous la courbe
+      svg+='<defs><linearGradient id="'+gid+'" x1="0" y1="0" x2="0" y2="1">';
+      svg+='<stop offset="0%" stop-color="'+lineColor+'" stop-opacity="0.32"/>';
+      svg+='<stop offset="100%" stop-color="'+lineColor+'" stop-opacity="0.0"/>';
+      svg+='</linearGradient></defs>';
+
+      // Grille Y + labels (valeurs sur axe Y)
+      (yTicks||[]).forEach(function(v){
+        var gy=sy(v);
+        if(gy<PT-2||gy>PT+CH+2)return;
+        svg+='<line x1="'+PL+'" y1="'+gy.toFixed(1)+'" x2="'+(PL+CW)+'" y2="'+gy.toFixed(1)+'" stroke="rgba(0,0,0,0.07)" stroke-width="0.5"/>';
+        svg+='<text x="'+(PL-4)+'" y="'+gy.toFixed(1)+'" text-anchor="end" dominant-baseline="middle" font-size="6.5" fill="rgba(20,20,17,0.35)" font-family="monospace">'+v+'</text>';
       });
 
-      // Zones de veille — fond léger SEULEMENT, sans bordures ni texte
+      // Zones de veille avec label SLEEP
       findSleepZones24h(ordered).forEach(function(z){
         var x1=sx(Math.max(0,z.s));
         var x2=z.e>=N?PL+CW:sx(z.e);
         var zw=Math.max(1,x2-x1);
-        svg+='<rect x="'+x1.toFixed(1)+'" y="'+PT+'" width="'+zw.toFixed(1)+'" height="'+CH+'" fill="rgba(0,0,0,0.055)" rx="2"/>';
+        svg+='<rect x="'+x1.toFixed(1)+'" y="'+PT+'" width="'+zw.toFixed(1)+'" height="'+CH+'" fill="rgba(0,0,0,0.05)" rx="2"/>';
+        if(zw>32){
+          var cx=((x1+x2)/2).toFixed(1), cy=(PT+CH/2).toFixed(1);
+          svg+='<text x="'+cx+'" y="'+cy+'" text-anchor="middle" dominant-baseline="middle" font-size="5.5" fill="rgba(20,20,17,0.18)" font-family="monospace" letter-spacing="1.2">SLEEP</text>';
+        }
       });
 
-      // Axe X — 3 ticks seulement : -24h, -12h, Maint.
-      [0,24,47].forEach(function(tick){
+      // Axe X — ticks toutes les 4h (8 steps)
+      for(var tick=0;tick<N;tick+=8){
         var tx=sx(tick);
-        var lbl=tick===47?'Maint.':stepToLocalHHMM(tick);
-        var anchor=tick===0?'start':tick===47?'end':'middle';
-        var col=tick===47?'rgba(20,20,17,0.7)':'rgba(20,20,17,0.35)';
-        var fw=tick===47?'bold':'normal';
-        svg+='<text x="'+tx.toFixed(1)+'" y="'+( H-1)+'" text-anchor="'+anchor+'" font-size="6" fill="'+col+'" font-family="monospace" font-weight="'+fw+'">'+lbl+'</text>';
-      });
+        svg+='<line x1="'+tx.toFixed(1)+'" y1="'+(PT+CH)+'" x2="'+tx.toFixed(1)+'" y2="'+(PT+CH+3)+'" stroke="rgba(20,20,17,0.2)" stroke-width="0.5"/>';
+        svg+='<text x="'+tx.toFixed(1)+'" y="'+(H-1)+'" text-anchor="middle" font-size="6" fill="rgba(20,20,17,0.35)" font-family="monospace">'+stepToLocalHHMM(tick)+'</text>';
+      }
+      // "Maint." à droite
+      var nx=sx(N-1);
+      svg+='<line x1="'+nx.toFixed(1)+'" y1="'+(PT+CH)+'" x2="'+nx.toFixed(1)+'" y2="'+(PT+CH+3)+'" stroke="rgba(20,20,17,0.5)" stroke-width="0.8"/>';
+      svg+='<text x="'+nx.toFixed(1)+'" y="'+(H-1)+'" text-anchor="end" font-size="6" fill="rgba(20,20,17,0.55)" font-family="monospace" font-weight="bold">Maint.</text>';
 
-      // Courbes de données — ligne propre SANS cercles
+      // Construction des segments de données
       var segments=[],cur=[];
       for(var i=0;i<N;i++){
-        if(ordered[i]!==null){ cur.push(sx(i).toFixed(2)+','+sy(metricFn(ordered[i])).toFixed(2)); }
+        if(ordered[i]!==null){ cur.push([sx(i),sy(metricFn(ordered[i]))]); }
         else{ if(cur.length>0){segments.push(cur.slice());cur=[];} }
       }
       if(cur.length>0)segments.push(cur);
 
       segments.forEach(function(seg){
         if(!seg.length)return;
-        var pts=seg.join(' ');
+        var pts=seg.map(function(p){return p[0].toFixed(2)+','+p[1].toFixed(2);}).join(' ');
         if(seg.length>1){
-          // Aire sous la courbe
-          var x0=seg[0].split(',')[0], xN=seg[seg.length-1].split(',')[0];
+          // Remplissage gradient
+          var x0=seg[0][0].toFixed(2), xN=seg[seg.length-1][0].toFixed(2);
           var base=(PT+CH).toFixed(2);
-          svg+='<polygon points="'+x0+','+base+' '+pts+' '+xN+','+base+'" fill="'+lineColor+'" opacity="0.12"/>';
-          // Courbe
-          svg+='<polyline points="'+pts+'" fill="none" stroke="'+lineColor+'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>';
-        } else {
-          // Point isolé (une seule mesure)
-          var xy=seg[0].split(',');
-          svg+='<circle cx="'+xy[0]+'" cy="'+xy[1]+'" r="2.5" fill="'+lineColor+'" opacity="0.8"/>';
+          svg+='<polygon points="'+x0+','+base+' '+pts+' '+xN+','+base+'" fill="url(#'+gid+')"/>';
+          // Courbe fine
+          svg+='<polyline points="'+pts+'" fill="none" stroke="'+lineColor+'" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/>';
         }
+        // Petits points sur chaque mesure
+        seg.forEach(function(p){
+          svg+='<circle cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="1.6" fill="'+lineColor+'" opacity="0.75"/>';
+        });
       });
 
       svg+='</svg>';
@@ -703,23 +744,23 @@ footer {
         '<div class="chart-wrap">'+
           '<div class="chart-meta">'+
             '<span class="chart-name">Température</span>'+
-            '<span class="chart-range">'+tMin+'→'+tMax+' °C</span>'+
+            '<span class="chart-range">10–50 °C</span>'+
           '</div>'+
-          makeSVG(function(s){return s.T;},'#1a3a68',tMin,tMax)+
+          makeSVG(function(s){return s.T;},'#1565C0',10,50,[10,20,30,40,50])+
         '</div>'+
         '<div class="chart-wrap">'+
           '<div class="chart-meta">'+
             '<span class="chart-name">Humidité</span>'+
-            '<span class="chart-range">30→100 %</span>'+
+            '<span class="chart-range">20–100 %</span>'+
           '</div>'+
-          makeSVG(function(s){return s.H;},'#1a5832',30,100)+
+          makeSVG(function(s){return s.H;},'#2E7D32',20,100,[20,40,60,80,100])+
         '</div>'+
         '<div class="chart-wrap">'+
           '<div class="chart-meta">'+
             '<span class="chart-name">Supercap</span>'+
-            '<span class="chart-range">2.8→4.3 V</span>'+
+            '<span class="chart-range">2.3–5.0 V</span>'+
           '</div>'+
-          makeSVG(function(s){return s.V;},'#5c3200',2.8,4.3)+
+          makeSVG(function(s){return s.V;},'#E65100',2.3,5.0,[2.5,3.0,3.5,4.0,4.5])+
         '</div>'+
         '<div class="sleep-legend">'+
           '<div class="sleep-swatch"></div>'+
